@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUR 213 Exam 1 - Interactive Study Quiz</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .progress-container {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .select-instruction {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .option:hover:not(.disabled) {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .option-letter {
+            font-weight: bold;
+            margin-right: 12px;
+            color: #667eea;
+            min-width: 25px;
+        }
+
+        .option-text {
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .option-icon {
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .feedback.correct .feedback-title {
+            color: #155724;
+        }
+
+        .feedback.incorrect .feedback-title {
+            color: #721c24;
+        }
+
+        .feedback-text {
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .menu-card {
+            text-align: center;
+        }
+
+        .menu-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .menu-btn {
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .menu-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+
+        .menu-btn-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .menu-btn-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .category-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .category-option {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .category-option:hover {
+            border-color: #667eea;
+        }
+
+        .category-option.selected {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .category-option input {
+            margin-right: 10px;
+        }
+
+        .results-card {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 30px auto;
+            color: white;
+        }
+
+        .score-percent {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .results-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .breakdown-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .breakdown-label {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .breakdown-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .review-list {
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .review-item {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .review-item.correct {
+            border-left: 4px solid #28a745;
+        }
+
+        .review-item.incorrect {
+            border-left: 4px solid #dc3545;
+        }
+
+        .review-question {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .review-answer {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .stats {
+                flex-direction: column;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main Menu -->
+        <div id="menu-screen" class="card menu-card">
+            <h1>NUR 213 Complex Health Concepts</h1>
+            <p class="subtitle">Exam 1 Interactive Study Quiz</p>
+
+            <div class="menu-options">
+                <button class="menu-btn" onclick="startQuiz('full-a')">
+                    <div class="menu-btn-title">Full Exam - Version A</div>
+                    <div class="menu-btn-desc">50 questions, all categories</div>
+                </button>
+                <button class="menu-btn" onclick="startQuiz('full-b')">
+                    <div class="menu-btn-title">Full Exam - Version B</div>
+                    <div class="menu-btn-desc">50 questions, all categories</div>
+                </button>
+                <button class="menu-btn" onclick="showCategorySelect()">
+                    <div class="menu-btn-title">Practice by Category</div>
+                    <div class="menu-btn-desc">Choose specific topics to study</div>
+                </button>
+                <button class="menu-btn" onclick="startQuiz('random')">
+                    <div class="menu-btn-title">Random Mix</div>
+                    <div class="menu-btn-desc">25 random questions from both versions</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Category Selection -->
+        <div id="category-screen" class="card hidden">
+            <h1>Select Categories</h1>
+            <p class="subtitle">Choose the topics you want to practice</p>
+
+            <div class="category-select">
+                <label class="category-option">
+                    <input type="checkbox" value="cardiomyopathy" checked>
+                    Cardiomyopathy (22 questions)
+                </label>
+                <label class="category-option">
+                    <input type="checkbox" value="dysrhythmias" checked>
+                    Dysrhythmias (30 questions)
+                </label>
+                <label class="category-option">
+                    <input type="checkbox" value="mi" checked>
+                    MI/Aneurysms (22 questions)
+                </label>
+                <label class="category-option">
+                    <input type="checkbox" value="teamwork" checked>
+                    Teamwork & Delegation (22 questions)
+                </label>
+                <label class="category-option">
+                    <input type="checkbox" value="calculations" checked>
+                    Dosage Calculations (4 questions)
+                </label>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn btn-secondary" onclick="showMenu()">Back</button>
+                <button class="btn btn-primary" onclick="startCategoryQuiz()">Start Practice</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="card hidden">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">Question <span class="stat-value" id="current-q">1</span> of <span id="total-q">50</span></div>
+                <div class="stat">Correct: <span class="stat-value" id="correct-count">0</span></div>
+                <div class="stat">Score: <span class="stat-value" id="current-score">0%</span></div>
+            </div>
+
+            <div class="category-badge" id="question-category">Category</div>
+
+            <div class="question-text" id="question-text"></div>
+
+            <div class="select-instruction hidden" id="select-instruction">Select all that apply</div>
+
+            <div class="options" id="options-container"></div>
+
+            <div class="feedback" id="feedback">
+                <div class="feedback-title" id="feedback-title"></div>
+                <div class="feedback-text" id="feedback-text"></div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn btn-secondary" onclick="showMenu()">Exit Quiz</button>
+                <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()" disabled>Submit Answer</button>
+                <button class="btn btn-primary hidden" id="next-btn" onclick="nextQuestion()">Next Question</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="card results-card hidden">
+            <h1>Quiz Complete!</h1>
+
+            <div class="score-circle">
+                <div class="score-percent" id="final-score">0%</div>
+                <div class="score-label">Final Score</div>
+            </div>
+
+            <div class="results-breakdown">
+                <div class="breakdown-item">
+                    <div class="breakdown-label">Correct</div>
+                    <div class="breakdown-value" id="final-correct">0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-label">Incorrect</div>
+                    <div class="breakdown-value" id="final-incorrect">0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-label">Total Questions</div>
+                    <div class="breakdown-value" id="final-total">0</div>
+                </div>
+            </div>
+
+            <div class="review-list" id="review-list">
+                <h3 style="margin-bottom: 15px;">Review Missed Questions:</h3>
+            </div>
+
+            <div class="btn-container" style="justify-content: center; margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="showMenu()">Back to Menu</button>
+                <button class="btn btn-primary" onclick="retryMissed()">Retry Missed Questions</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Question Bank - Version A
+        const questionsA = [
+            // Cardiomyopathy (1-11)
+            {
+                id: 'a1',
+                category: 'cardiomyopathy',
+                text: 'A 45-year-old male is admitted with progressive fatigue and dyspnea. His echocardiogram reveals an ejection fraction of 25% with enlarged, weakened ventricles. Which type of cardiomyopathy does the nurse suspect?',
+                options: ['Hypertrophic cardiomyopathy', 'Restrictive cardiomyopathy', 'Dilated cardiomyopathy', 'Arrhythmogenic right ventricular cardiomyopathy'],
+                correct: [2],
+                rationale: 'Dilated cardiomyopathy is characterized by enlarged, weakened ventricles with a reduced ejection fraction. An EF of 25% (normal is 55-70%) indicates significant systolic dysfunction.'
+            },
+            {
+                id: 'a2',
+                category: 'cardiomyopathy',
+                text: 'A 19-year-old college athlete collapses during basketball practice. He is successfully resuscitated and later diagnosed with a genetic cardiac condition. The nurse understands that sudden cardiac death in young athletes is most commonly associated with which condition?',
+                options: ['Dilated cardiomyopathy', 'Hypertrophic cardiomyopathy', 'Restrictive cardiomyopathy', 'Peripartum cardiomyopathy'],
+                correct: [1],
+                rationale: 'Hypertrophic cardiomyopathy (HCM) is the leading cause of sudden cardiac death in young athletes. The thickened heart muscle can cause fatal arrhythmias during intense physical exertion.'
+            },
+            {
+                id: 'a3',
+                category: 'cardiomyopathy',
+                text: 'A patient with hypertrophic cardiomyopathy (HCM) is being discharged. Which statement by the patient indicates a need for further teaching?',
+                options: ['"I should avoid strenuous physical activity"', '"I need to take my beta-blocker every day"', '"I can continue my competitive weightlifting routine"', '"I should report any episodes of fainting to my doctor"'],
+                correct: [2],
+                rationale: 'Patients with HCM should avoid strenuous exercise, especially competitive sports and weightlifting, as these activities increase the risk of sudden cardiac death. This statement indicates the patient needs more education.'
+            },
+            {
+                id: 'a4',
+                category: 'cardiomyopathy',
+                text: 'A nurse is caring for a patient newly diagnosed with dilated cardiomyopathy. The provider orders digoxin 0.125 mg daily. The nurse should monitor the patient for which hallmark sign of digoxin toxicity?',
+                options: ['Tinnitus', 'Visual disturbances with yellow-green halos', 'Severe headache', 'Muscle weakness'],
+                correct: [1],
+                rationale: 'Visual disturbances, particularly yellow-green halos around lights, are classic signs of digoxin toxicity. Other signs include nausea, vomiting, and bradycardia.'
+            },
+            {
+                id: 'a5',
+                category: 'cardiomyopathy',
+                text: 'A patient with restrictive cardiomyopathy presents with jugular venous distention and peripheral edema. The nurse recognizes these findings are manifestations of:',
+                options: ['Left-sided heart failure', 'Right-sided heart failure', 'Pulmonary embolism', 'Cardiac tamponade'],
+                correct: [1],
+                rationale: 'JVD and peripheral edema are signs of right-sided heart failure. The stiff ventricle in restrictive cardiomyopathy impairs filling, causing blood to back up into the systemic venous circulation.'
+            },
+            {
+                id: 'a6',
+                category: 'cardiomyopathy',
+                text: 'The nurse is educating a patient about cardiomyopathy. The patient asks which diagnostic test is most important for diagnosing cardiomyopathy. The nurse correctly responds:',
+                options: ['Chest X-ray', 'Electrocardiogram', 'Echocardiogram', 'Cardiac catheterization'],
+                correct: [2],
+                rationale: 'Echocardiogram is the gold standard for diagnosing cardiomyopathy. It provides visualization of heart structure, wall thickness, chamber size, valve function, and ejection fraction.'
+            },
+            {
+                id: 'a7',
+                category: 'cardiomyopathy',
+                text: 'A patient with advanced dilated cardiomyopathy is experiencing fluid overload. Which nursing intervention is the priority?',
+                options: ['Provide a low-sodium diet', 'Administer prescribed diuretics', 'Encourage increased fluid intake', 'Position the patient flat in bed'],
+                correct: [1],
+                rationale: 'Administering prescribed diuretics is the priority intervention for acute fluid overload to quickly reduce fluid volume. Diet modification is important but not the immediate priority.'
+            },
+            {
+                id: 'a8',
+                category: 'cardiomyopathy',
+                text: 'A nurse is assessing a patient admitted with cardiomyopathy. Which two symptoms are often tested on NCLEX as being the earliest signs of hypoxia? (Select two)',
+                options: ['Cyanosis', 'Restlessness', 'Bradycardia', 'Agitation', 'Hypotension'],
+                correct: [1, 3],
+                multiSelect: true,
+                rationale: 'Restlessness and agitation are early signs of hypoxia as the brain responds to decreased oxygen levels. Cyanosis is a late sign of hypoxia.'
+            },
+            {
+                id: 'a9',
+                category: 'cardiomyopathy',
+                text: 'A patient with dilated cardiomyopathy asks why their cardiac output is low. The nurse explains that cardiac output equals heart rate multiplied by:',
+                options: ['Blood pressure', 'Stroke volume', 'Ejection fraction', 'Afterload'],
+                correct: [1],
+                rationale: 'Cardiac Output = Heart Rate × Stroke Volume. In dilated cardiomyopathy, the weakened ventricle has reduced stroke volume, leading to decreased cardiac output.'
+            },
+            {
+                id: 'a10',
+                category: 'cardiomyopathy',
+                text: 'A woman who gave birth 6 weeks ago presents with severe fatigue and shortness of breath. Her echocardiogram shows decreased ejection fraction. The nurse suspects:',
+                options: ['Hypertrophic cardiomyopathy', 'Peripartum cardiomyopathy', 'Restrictive cardiomyopathy', 'Amyloid cardiomyopathy'],
+                correct: [1],
+                rationale: 'Peripartum cardiomyopathy develops during the last month of pregnancy or within 5 months after delivery in women with no prior heart disease. The timing (6 weeks postpartum) and symptoms are classic.'
+            },
+            {
+                id: 'a11',
+                category: 'cardiomyopathy',
+                text: 'A patient with cardiomyopathy is prescribed metoprolol. The nurse understands this beta-blocker works by:',
+                options: ['Increasing contractility of the heart', 'Reducing the workload of the heart', 'Dissolving blood clots', 'Increasing heart rate'],
+                correct: [1],
+                rationale: 'Beta-blockers like metoprolol reduce the workload of the heart by decreasing heart rate and blood pressure, which helps manage heart failure and reduces oxygen demand.'
+            },
+            // Dysrhythmias (12-26)
+            {
+                id: 'a12',
+                category: 'dysrhythmias',
+                text: 'A patient on telemetry suddenly develops a wide QRS complex regular rhythm at 180 bpm. The patient is unresponsive and pulseless. What is the nurse\'s immediate priority action?',
+                options: ['Administer amiodarone 300 mg IV push', 'Begin CPR and prepare for defibrillation', 'Administer atropine 1 mg IV push', 'Obtain a 12-lead ECG'],
+                correct: [1],
+                rationale: 'A pulseless patient with ventricular tachycardia requires immediate CPR and defibrillation. This is a cardiac arrest situation requiring immediate ACLS intervention.'
+            },
+            {
+                id: 'a13',
+                category: 'dysrhythmias',
+                text: 'A patient is found unresponsive with an organized rhythm on the monitor at 90 bpm, but no palpable pulse. The nurse recognizes this as:',
+                options: ['Ventricular fibrillation', 'Asystole', 'Pulseless electrical activity (PEA)', 'Ventricular tachycardia'],
+                correct: [2],
+                rationale: 'Pulseless electrical activity (PEA) is characterized by organized electrical activity on the monitor but no detectable pulse. Treatment focuses on identifying and treating reversible causes (Hs and Ts).'
+            },
+            {
+                id: 'a14',
+                category: 'dysrhythmias',
+                text: 'The nurse understands that defibrillation is NOT indicated for which rhythm?',
+                options: ['Ventricular fibrillation', 'Pulseless ventricular tachycardia', 'Asystole', 'Torsades de Pointes'],
+                correct: [2],
+                rationale: 'Defibrillation is not indicated for asystole (flatline) because there is no electrical activity to reset. Defibrillation is indicated for shockable rhythms: VF, pulseless VT, and Torsades de Pointes.'
+            },
+            {
+                id: 'a15',
+                category: 'dysrhythmias',
+                text: 'A 75-year-old patient presents with palpitations and shortness of breath. Telemetry shows an irregularly irregular rhythm with no visible P waves and a heart rate varying between 110-140 bpm. This rhythm is:',
+                options: ['Atrial flutter', 'Atrial fibrillation', 'Sinus tachycardia', 'Supraventricular tachycardia'],
+                correct: [1],
+                rationale: 'Atrial fibrillation is characterized by an irregularly irregular rhythm with no discernible P waves. The variable ventricular rate (110-140) is typical of uncontrolled AFib.'
+            },
+            {
+                id: 'a16',
+                category: 'dysrhythmias',
+                text: 'A patient with atrial fibrillation is at risk for which major complication?',
+                options: ['Ventricular hypertrophy', 'Stroke', 'Pneumonia', 'Renal failure'],
+                correct: [1],
+                rationale: 'Atrial fibrillation increases stroke risk significantly because blood can pool in the fibrillating atria, forming clots that can travel to the brain. This is why anticoagulation is crucial.'
+            },
+            {
+                id: 'a17',
+                category: 'dysrhythmias',
+                text: 'A patient with a history of alcoholism is admitted with a prolonged QT interval. The patient suddenly becomes unresponsive and the monitor shows a twisting pattern of ventricular tachycardia. After epinephrine and amiodarone, which medication would the nurse anticipate administering?',
+                options: ['Adenosine', 'Atropine', 'Magnesium sulfate', 'Lidocaine'],
+                correct: [2],
+                rationale: 'Torsades de Pointes (twisting VT pattern with prolonged QT) is treated with magnesium sulfate. Alcoholism often leads to hypomagnesemia, which can precipitate Torsades.'
+            },
+            {
+                id: 'a18',
+                category: 'dysrhythmias',
+                text: 'A 68-year-old patient on metoprolol presents with dizziness and fatigue. Heart rate is 46 bpm, BP 92/60. Telemetry shows a regular rhythm with P waves before each QRS. If the patient is symptomatic, what medication would the nurse anticipate?',
+                options: ['Adenosine', 'Atropine', 'Amiodarone', 'Diltiazem'],
+                correct: [1],
+                rationale: 'Atropine is the first-line medication for symptomatic bradycardia. It blocks vagal stimulation to increase heart rate. The patient\'s symptoms (dizziness, fatigue, low BP) indicate they are symptomatic.'
+            },
+            {
+                id: 'a19',
+                category: 'dysrhythmias',
+                text: 'A nurse observes a chaotic, irregular waveform with no consistent QRS complexes on the monitor. The patient is unresponsive. This rhythm is:',
+                options: ['Asystole', 'Ventricular fibrillation', 'Atrial fibrillation with RVR', 'Third-degree heart block'],
+                correct: [1],
+                rationale: 'Ventricular fibrillation appears as a chaotic, irregular waveform with no identifiable QRS complexes. It is a lethal rhythm requiring immediate defibrillation.'
+            },
+            {
+                id: 'a20',
+                category: 'dysrhythmias',
+                text: 'A post-MI patient shows progressively lengthening PR intervals followed by a dropped QRS complex. The nurse identifies this as:',
+                options: ['First-degree AV block', 'Second-degree AV block Type I (Wenckebach)', 'Second-degree AV block Type II', 'Third-degree AV block'],
+                correct: [1],
+                rationale: 'Second-degree AV block Type I (Wenckebach) is characterized by progressively lengthening PR intervals until a QRS is dropped. It\'s often seen after inferior MI and is usually benign.'
+            },
+            {
+                id: 'a21',
+                category: 'dysrhythmias',
+                text: 'A patient has intermittent dropped QRS complexes with constant PR intervals and a heart rate of 38 bpm. The patient is pale and diaphoretic. Why is atropine often ineffective for this rhythm?',
+                options: ['The block is located at the SA node', 'The block is located below the AV node', 'Atropine causes vasoconstriction', 'The patient has atrial fibrillation'],
+                correct: [1],
+                rationale: 'Second-degree AV block Type II occurs below the AV node (infranodal). Atropine works on the AV node, so it\'s often ineffective. These patients typically need pacing.'
+            },
+            {
+                id: 'a22',
+                category: 'dysrhythmias',
+                text: 'A 32-year-old patient with sepsis has a heart rate of 132 bpm. Telemetry shows a regular rhythm with normal P waves. The nurse should:',
+                options: ['Administer adenosine', 'Prepare for immediate cardioversion', 'Treat the underlying cause', 'Administer amiodarone'],
+                correct: [2],
+                rationale: 'This is sinus tachycardia secondary to sepsis. Sinus tachycardia is a compensatory response and should be treated by addressing the underlying cause (sepsis), not by treating the rhythm itself.'
+            },
+            {
+                id: 'a23',
+                category: 'dysrhythmias',
+                text: 'A patient suddenly develops a narrow QRS complex tachycardia at 200 bpm with sudden onset. The patient reports palpitations and dizziness but is hemodynamically stable. The nurse anticipates the provider will first order:',
+                options: ['Defibrillation', 'Adenosine', 'Amiodarone', 'Synchronized cardioversion'],
+                correct: [1],
+                rationale: 'For stable SVT (narrow complex tachycardia), adenosine is first-line treatment after vagal maneuvers. It briefly blocks AV node conduction to terminate the reentrant circuit.'
+            },
+            {
+                id: 'a24',
+                category: 'dysrhythmias',
+                text: 'A nurse is monitoring a patient when the rhythm strip shows a sawtooth pattern. The patient is stable with a blood pressure of 120/80. What is the nurse\'s next action?',
+                options: ['Give amiodarone 300 mg IV push', 'Seek expert consultation', 'Begin chest compressions', 'Prepare for defibrillation'],
+                correct: [1],
+                rationale: 'A sawtooth pattern indicates atrial flutter. In a stable patient, the nurse should seek expert consultation for rate or rhythm control. Emergency interventions are not needed for stable patients.'
+            },
+            {
+                id: 'a25',
+                category: 'dysrhythmias',
+                text: 'The nurse observes the rhythm strip shows artifact. What is the nurse\'s best action?',
+                options: ['Call a code blue and start CPR', 'Get the code cart', 'Assess the patient and replace the ECG stickers', 'Administer epinephrine'],
+                correct: [2],
+                rationale: 'Always assess the patient first! Artifact on the monitor doesn\'t reflect the patient\'s actual rhythm. Check the patient, then check and replace leads/stickers if needed.'
+            },
+            {
+                id: 'a26',
+                category: 'dysrhythmias',
+                text: 'A patient arrives at the ER with shortness of breath and dizziness. Heart rate is 40 bpm and BP is 82/51. The monitor shows pacemaker spikes without capture. What order does the nurse anticipate?',
+                options: ['Epinephrine 1 mg IV', 'Immediate cardioversion', 'Immediate defibrillation', 'Immediate transcutaneous pacing'],
+                correct: [3],
+                rationale: 'Pacemaker failure to capture in a symptomatic patient requires immediate transcutaneous pacing. The external pacemaker can provide temporary pacing until the device can be reprogrammed or replaced.'
+            },
+            // MI/Aneurysms (27-37)
+            {
+                id: 'a27',
+                category: 'mi',
+                text: 'A patient presents to the emergency department with chest pain lasting 15 minutes. The 12-lead ECG shows ST segment elevation in leads II, III, and aVF. The nurse recognizes this as:',
+                options: ['Anterior MI', 'Lateral MI', 'Inferior MI', 'Septal MI'],
+                correct: [2],
+                rationale: 'ST elevation in leads II, III, and aVF indicates an inferior MI (affecting the bottom of the heart). This area is typically supplied by the right coronary artery.'
+            },
+            {
+                id: 'a28',
+                category: 'mi',
+                text: 'A patient with acute coronary syndrome asks about the difference between STEMI and NSTEMI. The nurse correctly explains that STEMI involves:',
+                options: ['Partial blockage of a coronary artery', 'Complete blockage of a coronary artery', 'No elevated cardiac enzymes', 'ST segment depression on ECG'],
+                correct: [1],
+                rationale: 'STEMI (ST-elevation MI) indicates complete blockage of a coronary artery, causing transmural ischemia visible as ST elevation on ECG. NSTEMI involves partial blockage.'
+            },
+            {
+                id: 'a29',
+                category: 'mi',
+                text: 'According to AHA guidelines, what is the recommended door-to-PCI time for a patient with STEMI?',
+                options: ['Less than 30 minutes', 'Less than 60 minutes', 'Less than 90 minutes', 'Less than 120 minutes'],
+                correct: [2],
+                rationale: 'The AHA recommends door-to-balloon (PCI) time of less than 90 minutes for STEMI patients. "Time is muscle" - every minute of delay results in more cardiac tissue death.'
+            },
+            {
+                id: 'a30',
+                category: 'mi',
+                text: 'A patient is admitted with suspected MI. Which diagnostic test should be completed within 10 minutes of arrival to the ED?',
+                options: ['Chest X-ray', 'Echocardiogram', '12-lead ECG', 'Cardiac catheterization'],
+                correct: [2],
+                rationale: 'A 12-lead ECG should be obtained within 10 minutes of arrival to quickly identify STEMI and initiate appropriate treatment. This is a critical time-sensitive action.'
+            },
+            {
+                id: 'a31',
+                category: 'mi',
+                text: 'A nurse is caring for a patient experiencing an acute MI. Place the following initial nursing interventions in the correct order:\n1. Insert 2 IV lines\n2. Assess pain using PQRST\n3. Attach to cardiac monitor\n4. Obtain 12-lead ECG',
+                options: ['2, 3, 1, 4', '3, 2, 4, 1', '1, 2, 3, 4', '4, 3, 2, 1'],
+                correct: [0],
+                rationale: 'Correct order: Assess pain (PQRST) → Attach to cardiac monitor → Insert 2 IV lines → Obtain 12-lead ECG. Assessment comes first, then monitoring, IV access, and diagnostic testing.'
+            },
+            {
+                id: 'a32',
+                category: 'mi',
+                text: 'A patient with chest pain is prescribed aspirin, oxygen, nitroglycerin, and morphine. Which medication should be given first when symptoms develop?',
+                options: ['Oxygen', 'Morphine', 'Nitroglycerin', 'Aspirin 162-325 mg'],
+                correct: [3],
+                rationale: 'Aspirin should be given first (chewed, not swallowed) as it immediately begins to inhibit platelet aggregation. Remember MONA (Morphine, Oxygen, Nitroglycerin, Aspirin) but give Aspirin first!'
+            },
+            {
+                id: 'a33',
+                category: 'mi',
+                text: 'Mr. Cole is scheduled for open repair of an abdominal aortic aneurysm (AAA). The nurse understands that an aortic aneurysm involves:',
+                options: ['Infection of the aortic wall', 'A clot in the aorta', 'Weakness in the wall of the aorta', 'Cancer of the aorta'],
+                correct: [2],
+                rationale: 'An aneurysm is a weakness and outpouching of the arterial wall. In AAA, the weakened aortic wall balloons out and can rupture if not treated.'
+            },
+            {
+                id: 'a34',
+                category: 'mi',
+                text: 'A patient with an abdominal aortic aneurysm should be monitored for signs of aneurysm rupture. Which findings would indicate this complication? (Select two)',
+                options: ['Hematemesis', 'Severe back pain', 'Gradual onset headache', 'Sudden hypotensive episode', 'Fever and chills'],
+                correct: [1, 3],
+                multiSelect: true,
+                rationale: 'Signs of AAA rupture include severe back or abdominal pain and sudden hypotension from internal bleeding. This is a surgical emergency with high mortality.'
+            },
+            {
+                id: 'a35',
+                category: 'mi',
+                text: 'Five days post-AAA repair, the patient tries to sit upright in bed. The nurse cautions against this position because it can cause:',
+                options: ['Graft occlusion', 'Severe hypertension', 'Pulmonary embolism', 'Wound infection'],
+                correct: [0],
+                rationale: 'Hip flexion greater than 90 degrees can cause kinking of the graft, leading to graft occlusion. Patients should avoid acute hip flexion for several days after AAA repair.'
+            },
+            {
+                id: 'a36',
+                category: 'mi',
+                text: 'A nurse is assessing a post-operative AAA repair patient. Which finding indicates optimal blood flow to the lower extremities? (Select two)',
+                options: ['Cool, pale skin', 'Warm, pink skin', 'Capillary refill time greater than 3 seconds', 'Capillary refill time less than 3 seconds', 'Mottled skin'],
+                correct: [1, 3],
+                multiSelect: true,
+                rationale: 'Warm, pink skin and capillary refill less than 3 seconds indicate good peripheral perfusion. Cool, pale, or mottled skin and delayed capillary refill suggest compromised circulation.'
+            },
+            {
+                id: 'a37',
+                category: 'mi',
+                text: 'A patient on unfractionated IV heparin therapy requires monitoring of which lab value?',
+                options: ['Prothrombin time (PT)', 'Platelet count only', 'Activated partial thromboplastin time (APTT)', 'International normalized ratio (INR)'],
+                correct: [2],
+                rationale: 'APTT (also called PTT) is used to monitor unfractionated heparin therapy. PT/INR monitors warfarin therapy. Goal APTT is typically 1.5-2.5 times normal.'
+            },
+            // Teamwork/Delegation (38-48)
+            {
+                id: 'a38',
+                category: 'teamwork',
+                text: 'During a code blue, multiple team members arrive. Which role is responsible for managing the airway and ventilation?',
+                options: ['Code leader', 'Medication nurse', 'Respiratory therapist', 'Recorder'],
+                correct: [2],
+                rationale: 'The respiratory therapist (RT) is responsible for airway management and ventilation during a code. They handle bag-valve-mask ventilation, intubation assistance, and ventilator management.'
+            },
+            {
+                id: 'a39',
+                category: 'teamwork',
+                text: 'The charge nurse is making assignments. Which patient is most appropriate to assign to a newly graduated RN?',
+                options: ['A patient with unstable ventricular tachycardia', 'A patient 2 days post-MI who is stable', 'A patient requiring conscious sedation for cardioversion', 'A patient experiencing cardiogenic shock'],
+                correct: [1],
+                rationale: 'A stable post-MI patient is appropriate for a new graduate RN. Unstable patients, those requiring sedation, and those in shock require experienced nurses.'
+            },
+            {
+                id: 'a40',
+                category: 'teamwork',
+                text: 'An RN is working with an LPN and a UAP. Which task can be delegated to the UAP?',
+                options: ['Administering oral medications', 'Assessing a patient\'s lung sounds', 'Taking vital signs on a stable patient', 'Providing discharge teaching'],
+                correct: [2],
+                rationale: 'UAPs can perform basic tasks like vital signs on stable patients, hygiene, mobility assistance, and I&O measurement. Assessment, medication administration, and teaching require licensed personnel.'
+            },
+            {
+                id: 'a41',
+                category: 'teamwork',
+                text: 'A nurse has four patients. Which patient should be assessed FIRST?',
+                options: ['A patient with dilated cardiomyopathy with a blood pressure of 118/72', 'A patient post-cardiac catheterization with weak pedal pulses', 'A patient with atrial fibrillation on telemetry with a heart rate of 88', 'A patient with stable angina requesting pain medication'],
+                correct: [1],
+                rationale: 'The post-cath patient with weak pedal pulses needs immediate assessment - this could indicate arterial occlusion or hematoma at the access site, which are time-sensitive complications.'
+            },
+            {
+                id: 'a42',
+                category: 'teamwork',
+                text: 'During a code, the nurse administering medications should:',
+                options: ['Also perform chest compressions', 'Announce each medication given with time', 'Directly update the family', 'Document the code after it ends'],
+                correct: [1],
+                rationale: 'The medication nurse should announce each medication, dose, and time given for closed-loop communication and accurate documentation. This helps the team track interventions.'
+            },
+            {
+                id: 'a43',
+                category: 'teamwork',
+                text: 'Which task can be delegated to an LPN?',
+                options: ['Initial assessment of a newly admitted patient', 'Administering IV push medications', 'Monitoring an established IV infusion', 'Developing the nursing care plan'],
+                correct: [2],
+                rationale: 'LPNs can monitor established IV infusions. Initial assessments, IV push medications, and care plan development require RN-level practice (though LPN scope varies by state).'
+            },
+            {
+                id: 'a44',
+                category: 'teamwork',
+                text: 'A nurse is caring for four post-MI patients. All call lights go on simultaneously. Which patient should the nurse see FIRST?',
+                options: ['Patient requesting a bedpan', 'Patient with new onset chest pain', 'Patient asking when lunch arrives', 'Patient wanting to call a family member'],
+                correct: [1],
+                rationale: 'New onset chest pain in a post-MI patient could indicate re-infarction or extension of the MI - this is a potentially life-threatening emergency requiring immediate assessment.'
+            },
+            {
+                id: 'a45',
+                category: 'teamwork',
+                text: 'The nurse is prioritizing care. Which principle guides priority setting during emergencies?',
+                options: ['First come, first served', 'ABCs (Airway, Breathing, Circulation)', 'Patient preference', 'Physician orders'],
+                correct: [1],
+                rationale: 'The ABC framework (Airway, Breathing, Circulation) guides emergency prioritization. Life-threatening issues are addressed in this order to maintain survival.'
+            },
+            {
+                id: 'a46',
+                category: 'teamwork',
+                text: 'During a cardiac arrest, the code leader should:',
+                options: ['Perform chest compressions', 'Administer all medications', 'Direct the resuscitation effort and make treatment decisions', 'Document all interventions'],
+                correct: [2],
+                rationale: 'The code leader directs the resuscitation, makes treatment decisions, and ensures quality CPR. They should not perform hands-on tasks so they can maintain situational awareness.'
+            },
+            {
+                id: 'a47',
+                category: 'teamwork',
+                text: 'An RN asks a UAP to obtain vital signs on a patient with a new cardiac arrhythmia. The UAP reports the patient\'s heart rate is 42 and the patient is dizzy. What should the RN do FIRST?',
+                options: ['Thank the UAP and document the findings', 'Immediately assess the patient', 'Ask the UAP to recheck the vital signs', 'Call the healthcare provider'],
+                correct: [1],
+                rationale: 'The RN must immediately assess the patient. A heart rate of 42 with dizziness indicates symptomatic bradycardia requiring urgent evaluation and possible intervention.'
+            },
+            {
+                id: 'a48',
+                category: 'teamwork',
+                text: 'Which statement demonstrates proper closed-loop communication during a code?',
+                options: ['"I think we should give epinephrine"', '"Epinephrine 1 mg IV given at 10:42"', '"Someone give a medication"', '"The patient doesn\'t look good"'],
+                correct: [1],
+                rationale: 'Closed-loop communication involves clear, specific statements that confirm actions. "Epinephrine 1 mg IV given at 10:42" confirms the drug, dose, route, and time.'
+            },
+            // Calculations (49-50)
+            {
+                id: 'a49',
+                category: 'calculations',
+                text: 'A patient with an MI is prescribed a nitroglycerin infusion at 10 mcg/min. The pharmacy sends nitroglycerin 50 mg in 250 mL D5W. At what rate (mL/hr) should the nurse set the IV pump?',
+                options: ['2 mL/hr', '3 mL/hr', '5 mL/hr', '10 mL/hr'],
+                correct: [1],
+                rationale: 'Calculation: 50mg = 50,000mcg in 250mL → 200mcg/mL. Need 10mcg/min × 60 = 600mcg/hr. Rate = 600mcg/hr ÷ 200mcg/mL = 3 mL/hr'
+            },
+            {
+                id: 'a50',
+                category: 'calculations',
+                text: 'A patient is prescribed heparin 18 units/kg/hr. The patient weighs 80 kg. The heparin concentration is 25,000 units in 500 mL. At what rate should the nurse set the infusion pump (mL/hr)?',
+                options: ['25.8 mL/hr', '28.8 mL/hr', '32.4 mL/hr', '36.0 mL/hr'],
+                correct: [1],
+                rationale: 'Calculation: 18 units/kg × 80kg = 1,440 units/hr needed. Concentration: 25,000 units/500mL = 50 units/mL. Rate = 1,440 units/hr ÷ 50 units/mL = 28.8 mL/hr'
+            }
+        ];
+
+        // Question Bank - Version B
+        const questionsB = [
+            // Cardiomyopathy (1-11)
+            {
+                id: 'b1',
+                category: 'cardiomyopathy',
+                text: 'A nurse is reviewing the chart of a patient diagnosed with hypertrophic cardiomyopathy (HCM). Which order should the nurse question?',
+                options: ['Metoprolol 25 mg PO daily', 'Diltiazem 120 mg PO daily', 'Furosemide 40 mg IV push', 'Amiodarone 200 mg PO daily'],
+                correct: [2],
+                rationale: 'Furosemide (a diuretic) should be questioned for HCM. Patients with HCM need adequate preload because the thickened ventricle requires adequate filling pressure. Diuretics reduce preload excessively.'
+            },
+            {
+                id: 'b2',
+                category: 'cardiomyopathy',
+                text: 'A patient with restrictive cardiomyopathy asks the nurse to explain the disease. The nurse correctly states that restrictive cardiomyopathy is characterized by:',
+                options: ['Enlarged and weakened heart chambers', 'Thickening of the heart muscle, especially the septum', 'Stiffness of the heart muscle with impaired filling', 'Fatty tissue replacing right ventricular muscle'],
+                correct: [2],
+                rationale: 'Restrictive cardiomyopathy is characterized by stiff, rigid ventricular walls that impair diastolic filling. The heart cannot relax properly to fill with blood.'
+            },
+            {
+                id: 'b3',
+                category: 'cardiomyopathy',
+                text: 'The nurse is caring for a patient with arrhythmogenic right ventricular cardiomyopathy (ARVC). The nurse monitors closely for which potential complication?',
+                options: ['Pulmonary embolism', 'Ventricular arrhythmias', 'Aortic stenosis', 'Atrial septal defect'],
+                correct: [1],
+                rationale: 'ARVC involves replacement of RV muscle with fatty/fibrous tissue, creating areas of electrical instability that can trigger ventricular arrhythmias and sudden cardiac death.'
+            },
+            {
+                id: 'b4',
+                category: 'cardiomyopathy',
+                text: 'Which type of cardiomyopathy is caused by deposits of abnormal proteins that stiffen and scar the heart tissue?',
+                options: ['Dilated cardiomyopathy', 'Hypertrophic cardiomyopathy', 'Restrictive cardiomyopathy', 'Peripartum cardiomyopathy'],
+                correct: [2],
+                rationale: 'Restrictive cardiomyopathy can be caused by amyloidosis (abnormal protein deposits), sarcoidosis, or hemochromatosis, which infiltrate and stiffen the myocardium.'
+            },
+            {
+                id: 'b5',
+                category: 'cardiomyopathy',
+                text: 'A patient with dilated cardiomyopathy is prescribed digoxin. The nurse understands this medication is ordered because it:',
+                options: ['Reduces fluid retention', 'Increases contractility of the heart', 'Lowers blood pressure', 'Prevents blood clots'],
+                correct: [1],
+                rationale: 'Digoxin is a positive inotrope that increases the force of cardiac contraction. This helps improve cardiac output in the weakened heart of dilated cardiomyopathy.'
+            },
+            {
+                id: 'b6',
+                category: 'cardiomyopathy',
+                text: 'The heart lies in the space between the lungs in the thoracic cavity. This location is called the:',
+                options: ['Pericardium', 'Mediastinum', 'Pleural space', 'Epicardium'],
+                correct: [1],
+                rationale: 'The mediastinum is the central compartment of the thoracic cavity containing the heart, great vessels, esophagus, trachea, and other structures between the lungs.'
+            },
+            {
+                id: 'b7',
+                category: 'cardiomyopathy',
+                text: 'Which layer of the heart is responsible for contraction and relaxation?',
+                options: ['Pericardium', 'Epicardium', 'Myocardium', 'Endocardium'],
+                correct: [2],
+                rationale: 'The myocardium is the muscular middle layer of the heart wall responsible for contraction. The epicardium is the outer layer, and the endocardium lines the chambers.'
+            },
+            {
+                id: 'b8',
+                category: 'cardiomyopathy',
+                text: 'A patient with cardiomyopathy asks which side of the heart contains oxygenated blood. The nurse correctly responds:',
+                options: ['Right side', 'Left side', 'Both sides equally', 'Neither side'],
+                correct: [1],
+                rationale: 'The left side of the heart receives oxygenated blood from the lungs and pumps it to the body. The right side receives deoxygenated blood and pumps it to the lungs.'
+            },
+            {
+                id: 'b9',
+                category: 'cardiomyopathy',
+                text: 'A nursing student identifies the closure of the tricuspid and mitral valves as which heart sound?',
+                options: ['S1', 'S2', 'S3', 'S4'],
+                correct: [0],
+                rationale: 'S1 ("lub") is caused by closure of the AV valves (tricuspid and mitral) at the beginning of systole. S2 ("dub") is closure of the semilunar valves (aortic and pulmonic).'
+            },
+            {
+                id: 'b10',
+                category: 'cardiomyopathy',
+                text: 'The nurse is caring for a patient with left-sided heart failure secondary to cardiomyopathy. The nurse understands that left-sided heart failure primarily affects which body system?',
+                options: ['Hepatic system', 'Renal system', 'Pulmonary system', 'Peripheral vascular system'],
+                correct: [2],
+                rationale: 'Left-sided heart failure causes blood to back up into the pulmonary circulation, leading to pulmonary congestion, dyspnea, and crackles. Right-sided failure affects systemic circulation.'
+            },
+            {
+                id: 'b11',
+                category: 'cardiomyopathy',
+                text: 'Genetic testing may be recommended for patients with which two types of cardiomyopathy? (Select two)',
+                options: ['Peripartum cardiomyopathy', 'Hypertrophic cardiomyopathy (HCM)', 'Dilated cardiomyopathy (DCM)', 'Amyloid cardiomyopathy', 'Takotsubo cardiomyopathy'],
+                correct: [1, 2],
+                multiSelect: true,
+                rationale: 'HCM and DCM have strong genetic components. HCM is inherited in an autosomal dominant pattern, and familial DCM accounts for 20-35% of cases. Genetic testing helps identify at-risk family members.'
+            },
+            // Dysrhythmias (12-26)
+            {
+                id: 'b12',
+                category: 'dysrhythmias',
+                text: 'A patient collapses on the unit. The monitor shows a flat line in two leads. Before confirming asystole, what must the nurse verify?',
+                options: ['The patient\'s last potassium level', 'Lead placement and connections are correct', 'The patient\'s medication list', 'The patient\'s code status'],
+                correct: [1],
+                rationale: 'Before confirming asystole, verify lead placement and connections. A loose lead can mimic asystole. Check leads in multiple views and assess the patient before declaring a true flatline.'
+            },
+            {
+                id: 'b13',
+                category: 'dysrhythmias',
+                text: 'A nurse is monitoring a patient who suddenly develops ventricular fibrillation. The defibrillator is present. What is the nurse\'s FIRST action?',
+                options: ['Administer amiodarone 150 mg IV push', 'Begin CPR with chest compressions', 'Recheck the patient\'s vital signs', 'Defibrillate the patient'],
+                correct: [1],
+                rationale: 'Per ACLS guidelines, begin CPR with chest compressions immediately while the defibrillator is being prepared. High-quality CPR improves survival. Defibrillate as soon as the defibrillator is ready.'
+            },
+            {
+                id: 'b14',
+                category: 'dysrhythmias',
+                text: 'For which rhythm is defibrillation the priority intervention?',
+                options: ['Asystole', 'Pulseless electrical activity', 'Third-degree heart block', 'Ventricular fibrillation'],
+                correct: [3],
+                rationale: 'Ventricular fibrillation is a shockable rhythm requiring immediate defibrillation. Asystole and PEA are non-shockable rhythms. Third-degree heart block requires pacing, not defibrillation.'
+            },
+            {
+                id: 'b15',
+                category: 'dysrhythmias',
+                text: 'A patient with atrial fibrillation is prescribed warfarin (Coumadin). Which lab value is monitored to adjust the dosage?',
+                options: ['Activated partial thromboplastin time (APTT)', 'Prothrombin time (PT)/International normalized ratio (INR)', 'Bleeding time', 'Platelet count'],
+                correct: [1],
+                rationale: 'PT/INR monitors warfarin therapy. Target INR for AFib is typically 2.0-3.0. APTT monitors heparin therapy.'
+            },
+            {
+                id: 'b16',
+                category: 'dysrhythmias',
+                text: 'A patient on warfarin at home needs education regarding which topics? (Select all that apply)',
+                options: ['Need for continued blood tests', 'Safety issues during warfarin therapy', 'The need to adjust dietary intake of green, leafy vegetables', 'Withholding the drug for a day if easy bruising is noted', 'Use of other medications'],
+                correct: [0, 1, 2, 4],
+                multiSelect: true,
+                rationale: 'Patients need education on regular INR monitoring, bleeding precautions, consistent vitamin K intake (not withholding or avoiding), and drug interactions. Never withhold warfarin without provider guidance - report bruising instead.'
+            },
+            {
+                id: 'b17',
+                category: 'dysrhythmias',
+                text: 'A patient\'s monitor shows a regular rhythm at 180-220 bpm with narrow QRS complexes that started suddenly. The patient reports palpitations and dizziness but is stable. The nurse anticipates which initial intervention?',
+                options: ['Immediate unsynchronized shock', 'Vagal maneuvers followed by adenosine', 'Amiodarone infusion', 'Immediate cardioversion'],
+                correct: [1],
+                rationale: 'For stable SVT (narrow complex tachycardia with sudden onset), first try vagal maneuvers (Valsalva, carotid massage), then adenosine if unsuccessful. Cardioversion is reserved for unstable patients.'
+            },
+            {
+                id: 'b18',
+                category: 'dysrhythmias',
+                text: 'During resuscitation for pulseless electrical activity, which reversible causes should the nurse consider? (Select all that apply)',
+                options: ['Hypovolemia', 'Hypoxia', 'Hydrogen ion excess (acidosis)', 'Hypokalemia', 'Tension pneumothorax'],
+                correct: [0, 1, 2, 3, 4],
+                multiSelect: true,
+                rationale: 'All of these are part of the "Hs and Ts" - reversible causes of PEA. The Hs: Hypovolemia, Hypoxia, Hydrogen ion (acidosis), Hypo/hyperkalemia, Hypothermia. The Ts: Tension pneumothorax, Tamponade, Toxins, Thrombosis.'
+            },
+            {
+                id: 'b19',
+                category: 'dysrhythmias',
+                text: 'A patient with chest discomfort is being monitored during transport to the ER. The ECG shows ST elevation. The patient has received oxygen and nitroglycerin with pain relief. BP is 110/70. What is the nurse\'s next best action?',
+                options: ['Give atropine 1 mg IV', 'Administer another sublingual nitroglycerin', 'Initiate transcutaneous pacing', 'Continue monitoring and request cardiac consultation'],
+                correct: [3],
+                rationale: 'With pain relieved and stable vitals, continue monitoring and ensure cardiology consultation for STEMI evaluation and possible emergent PCI. No acute intervention needed if stable.'
+            },
+            {
+                id: 'b20',
+                category: 'dysrhythmias',
+                text: 'A patient with a history of atrial fibrillation develops a new ECG change showing ST elevation in the anterior leads. The patient is lightheaded and O2 saturation drops to 88%. Which actions should the nurse anticipate? (Select all that apply)',
+                options: ['Assess the patient\'s vital signs', 'Administer oxygen', 'Get a 12-lead ECG', 'Administer nitroglycerin SL', 'Prepare for transcutaneous pacing'],
+                correct: [0, 1, 2, 3],
+                multiSelect: true,
+                rationale: 'For suspected STEMI: assess vitals, give oxygen (hypoxic at 88%), get 12-lead ECG to confirm, and give nitroglycerin for ischemic pain. Pacing is not indicated for STEMI.'
+            },
+            {
+                id: 'b21',
+                category: 'dysrhythmias',
+                text: 'A patient suddenly develops ventricular tachycardia with a pulse. The patient reports mild palpitations but is otherwise clinically stable. What action would the nurse anticipate?',
+                options: ['Administer magnesium sulfate 2 grams over 20 minutes', 'Give an immediate unsynchronized shock', 'Give amiodarone 150 mg and obtain cardiology consult', 'Give an immediate synchronized shock'],
+                correct: [2],
+                rationale: 'For stable VT with a pulse, amiodarone is first-line pharmacological treatment. Synchronized cardioversion is reserved for unstable patients. Unsynchronized shock (defibrillation) is for pulseless VT/VF.'
+            },
+            {
+                id: 'b22',
+                category: 'dysrhythmias',
+                text: 'The nurse is caring for a patient receiving low molecular weight heparin (enoxaparin). Which lab value requires monitoring?',
+                options: ['Prothrombin time (PT)', 'Platelet count', 'Activated partial thromboplastin time (APTT)', 'International normalized ratio (INR)'],
+                correct: [1],
+                rationale: 'LMWH (enoxaparin) requires platelet count monitoring due to risk of heparin-induced thrombocytopenia (HIT). Unlike unfractionated heparin, LMWH doesn\'t require routine APTT monitoring.'
+            },
+            {
+                id: 'b23',
+                category: 'dysrhythmias',
+                text: 'A patient is diagnosed with second-degree AV block Type II. The nurse understands this rhythm is more dangerous than Type I because:',
+                options: ['It occurs only during sleep', 'It can progress to complete heart block', 'It causes hypertension', 'It only affects elderly patients'],
+                correct: [1],
+                rationale: 'Type II (Mobitz II) is more dangerous than Type I (Wenckebach) because it can suddenly progress to complete (third-degree) heart block. It usually requires pacemaker placement.'
+            },
+            {
+                id: 'b24',
+                category: 'dysrhythmias',
+                text: 'A patient in third-degree heart block requires which long-term treatment?',
+                options: ['Daily aspirin therapy', 'Beta-blocker medication', 'Permanent pacemaker implantation', 'Anticoagulation therapy'],
+                correct: [2],
+                rationale: 'Third-degree (complete) heart block requires permanent pacemaker implantation because there is no conduction between atria and ventricles. The ventricles beat independently at their own slow escape rate.'
+            },
+            {
+                id: 'b25',
+                category: 'dysrhythmias',
+                text: 'The nurse recognizes that atropine is the first-line medication for symptomatic:',
+                options: ['Ventricular tachycardia', 'Atrial fibrillation', 'Sinus bradycardia', 'Ventricular fibrillation'],
+                correct: [2],
+                rationale: 'Atropine is first-line for symptomatic sinus bradycardia. It blocks vagal (parasympathetic) stimulation to increase heart rate. It\'s not used for tachyarrhythmias or VF.'
+            },
+            {
+                id: 'b26',
+                category: 'dysrhythmias',
+                text: 'A patient\'s rhythm strip shows an irregularly irregular rhythm with fibrillatory waves. The rate varies between 90-150. Rate control for this rhythm differs from rhythm control in that rate control:',
+                options: ['Converts the rhythm back to normal sinus', 'Slows the ventricular response while allowing the arrhythmia to continue', 'Uses electrical cardioversion', 'Requires anticoagulation for 6 months before treatment'],
+                correct: [1],
+                rationale: 'Rate control slows the ventricular rate (using beta-blockers, calcium channel blockers, or digoxin) while allowing AFib to continue. Rhythm control attempts to restore normal sinus rhythm.'
+            },
+            // MI/Aneurysms (27-37)
+            {
+                id: 'b27',
+                category: 'mi',
+                text: 'A patient arrives at the emergency department with crushing chest pain, diaphoresis, and nausea. The nurse recognizes these as classic symptoms of:',
+                options: ['Pulmonary embolism', 'Myocardial infarction', 'Aortic dissection', 'Pneumothorax'],
+                correct: [1],
+                rationale: 'Crushing chest pain, diaphoresis (sweating), and nausea are classic symptoms of myocardial infarction. The triad represents sympathetic nervous system activation during cardiac ischemia.'
+            },
+            {
+                id: 'b28',
+                category: 'mi',
+                text: 'The nurse is reviewing cardiac biomarkers for a patient with suspected MI. Troponin levels begin to rise within how many hours of myocardial injury?',
+                options: ['1-2 hours', '4 hours', '12 hours', '24 hours'],
+                correct: [1],
+                rationale: 'Troponin begins to rise 4-6 hours after myocardial injury, peaks at 12-24 hours, and can remain elevated for 7-14 days. Serial troponins help confirm or rule out MI.'
+            },
+            {
+                id: 'b29',
+                category: 'mi',
+                text: 'A patient has a NSTEMI. The nurse understands that NSTEMI is characterized by:',
+                options: ['Complete blockage of a coronary artery with ST elevation', 'Partial blockage with elevated cardiac enzymes but no ST elevation', 'Coronary spasm with no elevated enzymes', 'Complete blockage with pathological Q waves'],
+                correct: [1],
+                rationale: 'NSTEMI involves partial coronary artery blockage causing subendocardial (not transmural) ischemia. Troponin is elevated, but there\'s no ST elevation on ECG - may show ST depression or T-wave changes.'
+            },
+            {
+                id: 'b30',
+                category: 'mi',
+                text: 'The nurse is caring for a patient post-PCI (percutaneous coronary intervention). Which assessment finding requires immediate intervention?',
+                options: ['Heart rate of 78 bpm', 'Blood pressure of 122/76', 'Hematoma at the femoral access site', 'Patient reports mild incision site tenderness'],
+                correct: [2],
+                rationale: 'A hematoma at the femoral access site requires immediate intervention - it could indicate bleeding or pseudoaneurysm. Apply pressure and notify the provider immediately.'
+            },
+            {
+                id: 'b31',
+                category: 'mi',
+                text: 'Which factors contribute to the development of deep vein thrombosis (DVT)? (Select three)',
+                options: ['Wound infection', 'Venous stasis', 'Dehydration', 'Vein injury', 'Hypoglycemia'],
+                correct: [1, 2, 3],
+                multiSelect: true,
+                rationale: 'Virchow\'s triad describes DVT risk factors: venous stasis (immobility), hypercoagulability (dehydration increases this), and vein injury (endothelial damage). These form the basis of DVT prevention.'
+            },
+            {
+                id: 'b32',
+                category: 'mi',
+                text: 'A patient asks why they need to take clopidogrel (Plavix) after receiving a coronary stent. The nurse explains this medication:',
+                options: ['Dissolves existing blood clots', 'Prevents platelets from forming clots', 'Reduces cholesterol levels', 'Lowers blood pressure'],
+                correct: [1],
+                rationale: 'Clopidogrel is an antiplatelet medication that prevents platelets from aggregating (clumping). After stent placement, dual antiplatelet therapy (aspirin + clopidogrel) prevents stent thrombosis.'
+            },
+            {
+                id: 'b33',
+                category: 'mi',
+                text: 'The major risk factor for aortic aneurysm that is modifiable includes:',
+                options: ['Age over 65', 'Male gender', 'Hypertension', 'Family history'],
+                correct: [2],
+                rationale: 'Hypertension is the major modifiable risk factor for aortic aneurysm. Chronic high blood pressure weakens the arterial wall over time. Age, gender, and family history are non-modifiable.'
+            },
+            {
+                id: 'b34',
+                category: 'mi',
+                text: 'After abdominal aortic aneurysm repair, the nurse assesses for signs of deep vein thrombosis. Which findings indicate DVT? (Select all that apply)',
+                options: ['Tenderness at the calf area', 'Increase in calf girth', 'Reddened area at the calf', 'Loss of sensation in the leg', 'Elevated body temperature'],
+                correct: [0, 1, 2, 4],
+                multiSelect: true,
+                rationale: 'DVT signs include calf pain/tenderness, increased calf circumference (swelling), redness, warmth, and possibly low-grade fever. Loss of sensation suggests arterial, not venous, compromise.'
+            },
+            {
+                id: 'b35',
+                category: 'mi',
+                text: 'A patient is transitioning from heparin to warfarin for treatment of DVT. The nurse knows that combined therapy is necessary for 4-5 days because:',
+                options: ['Heparin must be gradually weaned', 'The full anticoagulant effect of warfarin is delayed 3-4 days', 'Warfarin works only on arterial clots', 'Heparin prevents warfarin toxicity'],
+                correct: [1],
+                rationale: 'Warfarin inhibits synthesis of vitamin K-dependent clotting factors, but existing factors must be depleted (3-4 days). Heparin provides immediate anticoagulation during this transition period.'
+            },
+            {
+                id: 'b36',
+                category: 'mi',
+                text: 'The nurse is preparing a patient with STEMI for emergent PCI. If PCI is not available, the alternative treatment is:',
+                options: ['Watchful waiting', 'Immediate CABG surgery', 'Fibrinolytic therapy within 30 minutes', 'Aspirin and bed rest'],
+                correct: [2],
+                rationale: 'If PCI is not available within 120 minutes, fibrinolytic (thrombolytic) therapy should be administered within 30 minutes of arrival. This dissolves the clot blocking the coronary artery.'
+            },
+            {
+                id: 'b37',
+                category: 'mi',
+                text: 'Complications of myocardial infarction include which of the following? (Select all that apply)',
+                options: ['Arrhythmias', 'Heart failure', 'Cardiogenic shock', 'Hyperthyroidism', 'Pericarditis'],
+                correct: [0, 1, 2, 4],
+                multiSelect: true,
+                rationale: 'MI complications include arrhythmias (most common cause of death), heart failure, cardiogenic shock, pericarditis (Dressler syndrome), and ventricular rupture. Hyperthyroidism is unrelated.'
+            },
+            // Teamwork/Delegation (38-48)
+            {
+                id: 'b38',
+                category: 'teamwork',
+                text: 'The nurse is caring for four patients. Which patient is the priority?',
+                options: ['A patient with an AAA scheduled for surgery tomorrow', 'A patient with new-onset ventricular tachycardia', 'A patient 3 days post-MI requesting pain medication', 'A patient with stable atrial fibrillation'],
+                correct: [1],
+                rationale: 'New-onset ventricular tachycardia is a potentially life-threatening arrhythmia requiring immediate assessment and intervention. The other patients are stable or have scheduled (not emergent) needs.'
+            },
+            {
+                id: 'b39',
+                category: 'teamwork',
+                text: 'During a code blue, the recorder is responsible for:',
+                options: ['Performing chest compressions', 'Administering medications', 'Documenting all interventions, times, and patient responses', 'Making treatment decisions'],
+                correct: [2],
+                rationale: 'The recorder documents all interventions, medications given, times, and patient responses during the code. Accurate documentation is essential for continuity of care and quality review.'
+            },
+            {
+                id: 'b40',
+                category: 'teamwork',
+                text: 'Which nursing task requires RN-level assessment and cannot be delegated?',
+                options: ['Taking vital signs', 'Ambulating a stable patient', 'Evaluating a patient\'s response to a new medication', 'Measuring intake and output'],
+                correct: [2],
+                rationale: 'Evaluating patient response to medication requires RN-level clinical judgment and assessment skills. This involves interpreting findings and making decisions that cannot be delegated.'
+            },
+            {
+                id: 'b41',
+                category: 'teamwork',
+                text: 'An RN is delegating tasks to an LPN. Which task is within the LPN\'s scope of practice?',
+                options: ['Initiating a blood transfusion', 'Developing the nursing care plan', 'Administering oral medications', 'Performing initial patient assessment'],
+                correct: [2],
+                rationale: 'LPNs can administer oral medications. Blood transfusion initiation, care plan development, and initial assessments require RN-level practice (LPN scope varies by state).'
+            },
+            {
+                id: 'b42',
+                category: 'teamwork',
+                text: 'The nurse receives report on four patients. Using the ABC priority framework, which patient should be assessed first?',
+                options: ['A patient with a blood glucose of 180 mg/dL', 'A patient with oxygen saturation of 85% on room air', 'A patient with blood pressure of 148/92', 'A patient with a pain level of 6/10'],
+                correct: [1],
+                rationale: 'Using ABCs, the patient with O2 sat of 85% (breathing problem) is priority. This indicates hypoxia requiring immediate intervention. The other findings are abnormal but not immediately life-threatening.'
+            },
+            {
+                id: 'b43',
+                category: 'teamwork',
+                text: 'During a rapid response, effective communication includes:',
+                options: ['Speaking softly to avoid alarming the patient', 'Using vague terms to avoid mistakes', 'Providing information using SBAR format', 'Waiting until asked before sharing information'],
+                correct: [2],
+                rationale: 'SBAR (Situation, Background, Assessment, Recommendation) is a standardized communication tool that ensures clear, concise, and complete information transfer during emergencies.'
+            },
+            {
+                id: 'b44',
+                category: 'teamwork',
+                text: 'A UAP reports to the nurse that a patient\'s blood pressure is 82/50. What is the nurse\'s priority action?',
+                options: ['Document the finding', 'Ask the UAP to recheck in 15 minutes', 'Immediately assess the patient', 'Notify the healthcare provider'],
+                correct: [2],
+                rationale: 'The nurse must immediately assess the patient. A BP of 82/50 indicates hypotension that could signify shock, bleeding, or other serious conditions requiring urgent evaluation.'
+            },
+            {
+                id: 'b45',
+                category: 'teamwork',
+                text: 'Which patient can safely be assigned to a float nurse unfamiliar with the cardiac unit?',
+                options: ['A patient with active chest pain requiring nitroglycerin titration', 'A patient in cardiogenic shock on multiple drips', 'A stable post-MI patient awaiting discharge teaching', 'A patient requiring emergent cardioversion'],
+                correct: [2],
+                rationale: 'A stable post-MI patient awaiting discharge is appropriate for a float nurse. The other patients require specialized cardiac knowledge and experience with critical interventions.'
+            },
+            {
+                id: 'b46',
+                category: 'teamwork',
+                text: 'The charge nurse is delegating during a busy shift. Which principle guides appropriate delegation?',
+                options: ['Delegate the task to whoever is available', 'Match the task complexity to the caregiver\'s competency', 'Delegate tasks the RN doesn\'t want to do', 'Avoid follow-up to show trust in staff'],
+                correct: [1],
+                rationale: 'The 5 Rights of Delegation include right task, right circumstance, right person, right direction/communication, and right supervision. Match task complexity to competency level.'
+            },
+            {
+                id: 'b47',
+                category: 'teamwork',
+                text: 'During a cardiac arrest, the team leader assigns roles. The compressor should:',
+                options: ['Provide high-quality chest compressions with minimal interruptions', 'Document the code', 'Communicate with family', 'Obtain IV access'],
+                correct: [0],
+                rationale: 'The compressor provides high-quality chest compressions (rate 100-120/min, depth 2-2.4 inches, full recoil) with minimal interruptions. Compression fraction should be >60%.'
+            },
+            {
+                id: 'b48',
+                category: 'teamwork',
+                text: 'A nurse must prioritize care for multiple patients. Which framework helps determine the order of care?',
+                options: ['Personal preference', 'Maslow\'s hierarchy of needs', 'Room number order', 'Alphabetical order by last name'],
+                correct: [1],
+                rationale: 'Maslow\'s hierarchy helps prioritize: physiological needs (airway, breathing, circulation) first, then safety, belonging, esteem, and self-actualization. Address survival needs before psychological needs.'
+            },
+            // Calculations (49-50)
+            {
+                id: 'b49',
+                category: 'calculations',
+                text: 'A patient weighing 70 kg is prescribed dopamine at 5 mcg/kg/min. The pharmacy provides dopamine 400 mg in 250 mL D5W. Calculate the infusion rate in mL/hr.',
+                options: ['10.5 mL/hr', '13.1 mL/hr', '15.0 mL/hr', '17.5 mL/hr'],
+                correct: [1],
+                rationale: 'Calculation: 5 mcg/kg × 70 kg = 350 mcg/min × 60 = 21,000 mcg/hr = 21 mg/hr. Concentration: 400 mg/250 mL = 1.6 mg/mL. Rate = 21 mg/hr ÷ 1.6 mg/mL = 13.1 mL/hr'
+            },
+            {
+                id: 'b50',
+                category: 'calculations',
+                text: 'A patient is ordered amiodarone 150 mg IV over 10 minutes. The pharmacy sends amiodarone 150 mg in 100 mL D5W. At what rate should the nurse program the IV pump?',
+                options: ['100 mL/hr', '300 mL/hr', '600 mL/hr', '900 mL/hr'],
+                correct: [2],
+                rationale: 'Calculation: Need to infuse 100 mL over 10 minutes. Convert to mL/hr: 100 mL × (60 min/10 min) = 100 × 6 = 600 mL/hr'
+            }
+        ];
+
+        // Category mappings
+        const categoryNames = {
+            cardiomyopathy: 'Structural/Cardiomyopathy',
+            dysrhythmias: 'Dysrhythmias',
+            mi: 'MI/Aneurysms',
+            teamwork: 'Teamwork & Delegation',
+            calculations: 'Dosage Calculations'
+        };
+
+        // Quiz state
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let correctCount = 0;
+        let selectedAnswers = [];
+        let answeredQuestions = [];
+        let missedQuestions = [];
+
+        // DOM elements
+        const screens = {
+            menu: document.getElementById('menu-screen'),
+            category: document.getElementById('category-screen'),
+            quiz: document.getElementById('quiz-screen'),
+            results: document.getElementById('results-screen')
+        };
+
+        function showScreen(screenName) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            screens[screenName].classList.remove('hidden');
+        }
+
+        function showMenu() {
+            showScreen('menu');
+        }
+
+        function showCategorySelect() {
+            showScreen('category');
+            // Reset checkboxes
+            document.querySelectorAll('.category-option input').forEach(cb => cb.checked = true);
+        }
+
+        function startQuiz(mode) {
+            currentQuestions = [];
+            currentIndex = 0;
+            correctCount = 0;
+            answeredQuestions = [];
+            missedQuestions = [];
+
+            if (mode === 'full-a') {
+                currentQuestions = [...questionsA];
+            } else if (mode === 'full-b') {
+                currentQuestions = [...questionsB];
+            } else if (mode === 'random') {
+                const allQuestions = [...questionsA, ...questionsB];
+                shuffleArray(allQuestions);
+                currentQuestions = allQuestions.slice(0, 25);
+            }
+
+            showScreen('quiz');
+            displayQuestion();
+        }
+
+        function startCategoryQuiz() {
+            const selectedCategories = Array.from(document.querySelectorAll('.category-option input:checked'))
+                .map(cb => cb.value);
+
+            if (selectedCategories.length === 0) {
+                alert('Please select at least one category');
+                return;
+            }
+
+            currentQuestions = [];
+            currentIndex = 0;
+            correctCount = 0;
+            answeredQuestions = [];
+            missedQuestions = [];
+
+            const allQuestions = [...questionsA, ...questionsB];
+            currentQuestions = allQuestions.filter(q => selectedCategories.includes(q.category));
+            shuffleArray(currentQuestions);
+
+            showScreen('quiz');
+            displayQuestion();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function displayQuestion() {
+            const question = currentQuestions[currentIndex];
+            selectedAnswers = [];
+
+            // Update progress
+            const progress = ((currentIndex) / currentQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('current-q').textContent = currentIndex + 1;
+            document.getElementById('total-q').textContent = currentQuestions.length;
+            document.getElementById('correct-count').textContent = correctCount;
+            const scorePercent = currentIndex > 0 ? Math.round((correctCount / currentIndex) * 100) : 0;
+            document.getElementById('current-score').textContent = scorePercent + '%';
+
+            // Display category and question
+            document.getElementById('question-category').textContent = categoryNames[question.category];
+            document.getElementById('question-text').textContent = question.text;
+
+            // Show select instruction if multi-select
+            const instruction = document.getElementById('select-instruction');
+            if (question.multiSelect) {
+                instruction.classList.remove('hidden');
+            } else {
+                instruction.classList.add('hidden');
+            }
+
+            // Display options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.innerHTML = `
+                    <span class="option-letter">${letters[index]}.</span>
+                    <span class="option-text">${option}</span>
+                `;
+                optionDiv.onclick = () => selectOption(index, question.multiSelect);
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            // Reset buttons and feedback
+            document.getElementById('submit-btn').classList.remove('hidden');
+            document.getElementById('submit-btn').disabled = true;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        function selectOption(index, multiSelect) {
+            const options = document.querySelectorAll('.option');
+
+            if (options[0].classList.contains('disabled')) return;
+
+            if (multiSelect) {
+                const pos = selectedAnswers.indexOf(index);
+                if (pos > -1) {
+                    selectedAnswers.splice(pos, 1);
+                    options[index].classList.remove('selected');
+                } else {
+                    selectedAnswers.push(index);
+                    options[index].classList.add('selected');
+                }
+            } else {
+                selectedAnswers = [index];
+                options.forEach((opt, i) => {
+                    opt.classList.toggle('selected', i === index);
+                });
+            }
+
+            document.getElementById('submit-btn').disabled = selectedAnswers.length === 0;
+        }
+
+        function submitAnswer() {
+            const question = currentQuestions[currentIndex];
+            const options = document.querySelectorAll('.option');
+
+            // Disable further selection
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            // Check answer
+            const sortedSelected = [...selectedAnswers].sort();
+            const sortedCorrect = [...question.correct].sort();
+            const isCorrect = JSON.stringify(sortedSelected) === JSON.stringify(sortedCorrect);
+
+            if (isCorrect) {
+                correctCount++;
+                selectedAnswers.forEach(i => options[i].classList.add('correct'));
+            } else {
+                selectedAnswers.forEach(i => {
+                    if (!question.correct.includes(i)) {
+                        options[i].classList.add('incorrect');
+                    }
+                });
+                question.correct.forEach(i => options[i].classList.add('correct'));
+                missedQuestions.push({
+                    question: question,
+                    userAnswer: selectedAnswers,
+                    correctAnswer: question.correct
+                });
+            }
+
+            // Show feedback
+            const feedback = document.getElementById('feedback');
+            feedback.style.display = 'block';
+            feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+            document.getElementById('feedback-title').textContent = isCorrect ? 'Correct!' : 'Incorrect';
+            document.getElementById('feedback-text').textContent = question.rationale;
+
+            // Update buttons
+            document.getElementById('submit-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+            document.getElementById('next-btn').textContent =
+                currentIndex < currentQuestions.length - 1 ? 'Next Question' : 'View Results';
+
+            // Update score display
+            document.getElementById('correct-count').textContent = correctCount;
+            const scorePercent = Math.round((correctCount / (currentIndex + 1)) * 100);
+            document.getElementById('current-score').textContent = scorePercent + '%';
+
+            // Record answer
+            answeredQuestions.push({
+                question: question,
+                correct: isCorrect
+            });
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < currentQuestions.length) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            showScreen('results');
+
+            const total = currentQuestions.length;
+            const incorrect = total - correctCount;
+            const percent = Math.round((correctCount / total) * 100);
+
+            document.getElementById('final-score').textContent = percent + '%';
+            document.getElementById('final-correct').textContent = correctCount;
+            document.getElementById('final-incorrect').textContent = incorrect;
+            document.getElementById('final-total').textContent = total;
+
+            // Show missed questions
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = '<h3 style="margin-bottom: 15px;">Review Missed Questions:</h3>';
+
+            if (missedQuestions.length === 0) {
+                reviewList.innerHTML += '<p style="color: #28a745; font-weight: 500;">Perfect score! No questions to review.</p>';
+                document.querySelector('button[onclick="retryMissed()"]').style.display = 'none';
+            } else {
+                document.querySelector('button[onclick="retryMissed()"]').style.display = 'inline-block';
+                const letters = ['A', 'B', 'C', 'D', 'E'];
+                missedQuestions.forEach((item, i) => {
+                    const userAnswerText = item.userAnswer.map(idx => letters[idx]).join(', ');
+                    const correctAnswerText = item.correctAnswer.map(idx => letters[idx]).join(', ');
+
+                    const div = document.createElement('div');
+                    div.className = 'review-item incorrect';
+                    div.innerHTML = `
+                        <div class="review-question">${i + 1}. ${item.question.text.substring(0, 100)}...</div>
+                        <div class="review-answer">Your answer: ${userAnswerText} | Correct: ${correctAnswerText}</div>
+                    `;
+                    reviewList.appendChild(div);
+                });
+            }
+        }
+
+        function retryMissed() {
+            if (missedQuestions.length === 0) return;
+
+            currentQuestions = missedQuestions.map(m => m.question);
+            currentIndex = 0;
+            correctCount = 0;
+            answeredQuestions = [];
+            missedQuestions = [];
+
+            showScreen('quiz');
+            displayQuestion();
+        }
+
+        // Category option styling
+        document.querySelectorAll('.category-option').forEach(label => {
+            const checkbox = label.querySelector('input');
+            checkbox.addEventListener('change', () => {
+                label.classList.toggle('selected', checkbox.checked);
+            });
+            label.classList.toggle('selected', checkbox.checked);
+        });
+    </script>
+</body>
+</html>
